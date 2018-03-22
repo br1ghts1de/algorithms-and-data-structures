@@ -1,0 +1,150 @@
+ASTEBINnew pastetrends API tools faq 
+search...
+ 
+
+Guest User
+-
+      
+Public Pastes
+Untitled
+C++ | 2 sec ago
+Untitled
+Python | 2 sec ago
+Logcat
+7 sec ago
+YEET - the comeback
+7 sec ago
+tabela
+Latex | 30 sec ago
+Untitled
+34 sec ago
+Untitled
+36 sec ago
+Untitled
+37 sec ago
+daily pastebin  goal
+21%
+help support pastebin
+SHARE
+TWEET
+
+Untitled
+ A GUEST   MAR 3RD, 2018   50   NEVER
+Not a member of Pastebin yet? Sign Up, it unlocks many cool features!
+rawdownloadcloneembedreportprint text 1.60 KB
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+ 
+using namespace std;
+ 
+struct DSU
+{
+    vector<int>pr;
+    vector<int>rank;
+ 
+    void build(int size)
+    {
+        pr.resize(size);
+        rank.assign(size, 1);
+        for (int i = 0; i < size; i++)
+        {
+            pr[i] = i;
+        }
+    }
+ 
+    int get(int v)
+    {
+        return v == pr[v] ? pr[v]: pr[v] = get(pr[v]);
+    }
+ 
+    void glue(int a, int b)
+    {
+        a = get(a);
+        b = get(b);
+ 
+        if (rank[a] < rank[b])
+        {
+            swap(a, b);
+        }
+ 
+        pr[b] = a;
+        rank[a] += rank[b];
+    }
+ 
+    bool check(int a, int b)
+    {
+        return get(a) == get(b);
+    }
+ 
+};
+ 
+struct Node
+{
+    long long W;
+    int from, to;
+    Node(long long W, int from, int to) :
+        W(W),
+        from(from),
+        to(to)
+    {}
+};
+bool mycmp(Node a, Node b)
+{
+    return a.W < b.W;
+}
+ 
+struct Graph
+{
+    int vert = 0;
+    int nod = 0;
+    vector<Node>nodes;
+    vector<vector<pair<int,int>>>graph;
+ 
+    Graph(int vert, int nod)
+        :
+        vert(vert),
+        nod(nod)
+    {
+        for (int i = 0; i < nod; i++)
+        {
+            int a, b; long long c;
+            cin >> a >> b >> c;
+            Node k1(c, a-1, b-1);
+            nodes.push_back(k1);
+        }
+        sort(nodes.begin(), nodes.end(), mycmp);
+    }
+ 
+    long long minost_price()
+    {
+        DSU mydsu;
+        mydsu.build(vert);
+        long long ans = 0;
+        sort(nodes.begin(), nodes.end(), mycmp);
+ 
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            if (!mydsu.check(nodes[i].from, nodes[i].to))
+            {
+                mydsu.glue(nodes[i].from, nodes[i].to);
+                ans += nodes[i].W;
+            }
+        }
+        return ans;
+    }
+ 
+};
+ 
+int main()
+{
+    int n = 0, k = 0;
+    cin >> n >> k;
+   
+    Graph graph(n, k);
+   
+    cout << graph.minost_price() << endl;
+ 
+    return 0;
+}
